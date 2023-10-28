@@ -1,0 +1,10 @@
+/* .parentDiv{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 3rem;
+} */
+
+.innerDiv{
+    /* background-color: aqua; */
+}
