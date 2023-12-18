@@ -1,10 +1,18 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import "./Home.css";
+
+const useLatestValue = (data) => {
+  const dataRef = useRef(data);
+  dataRef.current = data;
+  return dataRef;
+};
 
 const Home = () => {
   const [data, setData] = useState([]);
+  //   const dataRef = useRef([]);
+  const dataRef = useLatestValue(data);
   const [dataToDisplay, setDataToDisplay] = useState([]);
-  const [count, setCount] = useState(100);
+  const [count, setCount] = useState(10);
 
   const getData = async () => {
     const tempResult = await fetch(
@@ -12,7 +20,8 @@ const Home = () => {
     );
     const result = await tempResult.json();
     setData(result);
-    setDataToDisplay(result.slice(0, 100));
+    // dataRef.current = result;
+    setDataToDisplay(result.slice(0, 10));
   };
 
   const handleScroll = () => {
@@ -20,8 +29,12 @@ const Home = () => {
     const ele = document.getElementById("parentDiv");
     const contentHeight = ele.offsetHeight;
     if (userScrolledHeight >= contentHeight) {
-      setDataToDisplay([...dataToDisplay, ...data.slice(count, count + 100)]);
-      setCount(count + 100);
+      //   console.log({ data, dataToDisplay, dataRef: dataRef.current });
+      setDataToDisplay((dataToDisplay) => [
+        ...dataToDisplay,
+        ...dataRef.current.slice(count, count + 10),
+      ]);
+      setCount((count) => count + 10);
     }
   };
 
@@ -29,6 +42,8 @@ const Home = () => {
     getData();
     window.addEventListener("scroll", handleScroll);
   }, []);
+
+  //   console.log({ data, dataToDisplay, count });
 
   return (
     <div id="parentDiv">
@@ -42,43 +57,3 @@ const Home = () => {
 };
 
 export default Home;
-// const [images, setImages] = useState([]);
-// const [imgToDisplay, setImgToDisplay] = useState([]);
-// const [load, setLoad] = useState(20);
-// const [toAdd, setToAdd] = useState(0);
-
-// const getImages = async() => {
-//     const result = await fetch("https://jsonplaceholder.typicode.com/photos");
-//     const temp = await result.json();
-//     setImages(temp);
-//     setImgToDisplay(temp.slice(0,load));
-//     setToAdd(load);
-// }
-
-// const handleScroll = () => {
-//     const userScrollHeight = window.innerHeight+window.scrollY;
-//     const windowBottomHeight = document.documentElement.offsetHeight;
-//     if(userScrollHeight>=windowBottomHeight){
-//         // getImages();
-//         setImgToDisplay(images.slice(toAdd, toAdd+load));
-//         setToAdd(toAdd+load);
-//     }
-// }
-
-// useEffect(()=>{
-//     getImages();
-//     window.addEventListener('scroll', handleScroll);
-// },[]);
-// // https://jsonplaceholder.typicode.com/photos
-// // https://picsum.photos/v2/list
-// return (
-//     <Box>
-//         <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
-//             {imgToDisplay.map((item) => (
-//                 <Grid item xs={2} sm={4} md={4} key={item.id}>
-//                     <h1>hello</h1>
-//                 </Grid>
-//             ))}
-//         </Grid>
-//     </Box>
-// );
